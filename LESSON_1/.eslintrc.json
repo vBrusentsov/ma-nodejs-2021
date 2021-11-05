@@ -1,4 +1,5 @@
 {
+    "plugins": ["prettier"],
     "env": {
         "node": true,
         "commonjs": true,
@@ -9,6 +10,7 @@
         "ecmaVersion": "latest"
     },
     "rules": {
+        "prettier/prettier": "error",
         "quotes": ["error", "single"],
         "no-console": "off",
         "max-len": ["warn", { "code": 80 }],
