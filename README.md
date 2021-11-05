@@ -1,2 +1,2 @@
 # ma-nodejs-2021
-Node.js course
+In homework, functions were created to process the array.
