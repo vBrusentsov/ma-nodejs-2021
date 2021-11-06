@@ -6,7 +6,7 @@ const {
 } = require('./helpers');
 
 function boot(products) {
-  // console.log(getPrice(products));
+  console.log(getPrice(products));
   const oranges = getFilterGoods(products, 'item', 'orange');
   const filterOranges = getFilterGoods(oranges, 'weight', 4);
   console.log(filterOranges);
