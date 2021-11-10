@@ -6,12 +6,12 @@ const data = require('../data.json');
 //   helper3: getPrice,
 // } = require('./helpers');
 
-// function filterGoods(req, res) {
-//   const { message, code } = services.filterGoods();
-//   res.write(message);
-//   res.statusCode = code;
-//   res.end();
-// }
+function filterGoods(req, res) {
+  const { goods, code } = services.filter();
+  res.statusCode = code;
+  res.write(JSON.stringify(goods));
+  res.end();
+}
 
 // function mostExpensive(req, res) {
 //   const { message, code } = services.mostExpensive();
@@ -37,12 +37,12 @@ const data = require('../data.json');
 function notFound(req, res) {
   const { message, code } = services.notFound();
   res.statusCode = code;
-  res.write(message);
+  res.write(JSON.stringify({ message }));
   res.end();
 }
 
 module.exports = {
-  // filterGoods,
+  filterGoods,
   // mostExpensive,
   // price,
   // goods,

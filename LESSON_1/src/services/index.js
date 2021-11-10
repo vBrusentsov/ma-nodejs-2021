@@ -1,16 +1,16 @@
-// const data = require('../data.json');
+const goods = require('../data.json');
 // const {
 //   helper1: getFilterGoods,
 //   helper2: getMostExpensive,
 //   helper3: getPrice,
 // } = require('./helpers');
 
-// function goods() {
-//   return {
-//     code: 200,
-//     message: data,
-//   };
-// }
+function filter() {
+  return {
+    code: 200,
+    goods,
+  };
+}
 
 function notFound() {
   return {
@@ -20,6 +20,6 @@ function notFound() {
 }
 
 module.exports = {
-  // goods,
+  filter,
   notFound,
 };

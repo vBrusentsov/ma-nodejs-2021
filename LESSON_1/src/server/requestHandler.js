@@ -19,6 +19,7 @@ module.exports = (req, res) => {
     })
     .on('end', () => {
       body = Buffer.concat(body).toString();
+      res.setHeader('Content-Type', 'application/json');
       routes({ ...req, pathname, body, params: searchParams }, res);
     });
 };
