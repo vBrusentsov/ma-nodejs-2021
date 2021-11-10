@@ -8,9 +8,16 @@ const data = require('../data.json');
 
 function filterGoods(req, res) {
   const { goods, code } = services.filter();
-  res.statusCode = code;
-  res.write(JSON.stringify(goods));
-  res.end();
+
+  if (Array.from(req.params).length === 0) {
+    res.statusCode = code;
+    res.write(JSON.stringify(goods));
+    res.end();
+  } else {
+    res.statusCode = code;
+    res.write(JSON.stringify(goods));
+    res.end();
+  }
 }
 
 // function mostExpensive(req, res) {
