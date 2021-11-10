@@ -7,7 +7,7 @@ const {
 } = require('../services/helpers');
 
 function filterGoods(req, res) {
-  const { goods, code } = services.filter();
+  const { goods, code, codeNoContent, messageNoContent } = services.filter();
 
   if (Array.from(req.params).length === 0) {
     res.statusCode = code;
@@ -22,9 +22,14 @@ function filterGoods(req, res) {
         Number.isNaN(+value) ? value : +value,
       );
     });
-    res.write(JSON.stringify(resultGoods));
-    res.statusCode = code;
-    res.end();
+    if (resultGoods.length === 0) {
+      res.statusCode = codeNoContent;
+      res.end(JSON.stringify({ messageNoContent }));
+    } else {
+      res.write(JSON.stringify(resultGoods));
+      res.statusCode = code;
+      res.end();
+    }
   }
 }
 
