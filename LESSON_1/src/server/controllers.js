@@ -1,10 +1,10 @@
 const services = require('../services');
 const data = require('../data.json');
-// const {
-//   helper1: getFilterGoods,
-//   helper2: getMostExpensive,
-//   helper3: getPrice,
-// } = require('./helpers');
+const {
+  helper1: getFilterGoods,
+  // helper2: getMostExpensive,
+  // helper3: getPrice,
+} = require('../services/helpers');
 
 function filterGoods(req, res) {
   const { goods, code } = services.filter();
@@ -14,8 +14,16 @@ function filterGoods(req, res) {
     res.write(JSON.stringify(goods));
     res.end();
   } else {
+    let resultGoods = goods;
+    req.params.forEach((value, key) => {
+      resultGoods = getFilterGoods(
+        resultGoods,
+        key,
+        Number.isNaN(+value) ? value : +value,
+      );
+    });
+    res.write(JSON.stringify(resultGoods));
     res.statusCode = code;
-    res.write(JSON.stringify(goods));
     res.end();
   }
 }
