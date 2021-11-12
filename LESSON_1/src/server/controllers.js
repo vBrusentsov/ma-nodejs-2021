@@ -1,4 +1,6 @@
 const services = require('../services');
+
+const getBody = {};
 const data = require('../data.json');
 const {
   helper1: getFilterGoods,
@@ -6,7 +8,7 @@ const {
   // helper3: getPrice,
 } = require('../services/helpers');
 
-function filterGoods(req, res) {
+function getReqfilterGoods(req, res, params) {
   const { goods, code, codeNoContent, messageNoContent } = services.filter();
 
   if (Array.from(req.params).length === 0) {
@@ -62,7 +64,7 @@ function notFound(req, res) {
 }
 
 module.exports = {
-  filterGoods,
+  getReqfilterGoods,
   // mostExpensive,
   // price,
   // goods,
