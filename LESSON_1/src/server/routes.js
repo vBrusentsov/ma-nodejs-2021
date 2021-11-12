@@ -12,8 +12,7 @@ module.exports = (req, res) => {
     req.params.forEach((value, key) => {
       params[key] = value;
     });
-    console.log(params);
-    return controllers.getReqfilterGoods(req, res);
+    return controllers.getReqfilterGoods(req, res, params);
   }
 
   return controllers.notFound(req, res);
