@@ -9,8 +9,18 @@ const {
 } = require('../services/helpers');
 
 function getReqfilterGoods(req, res, params) {
-  const { goods, code, codeNoContent, messageNoContent } = services.filter();
-
+  const {
+    goods,
+    code,
+    codeNoContent,
+    messageNoContent,
+    codeWrongValid,
+    messageWrongValid,
+  } = services.filter();
+  if (validate(params) === false) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+  }
   if (Object.keys(params).length === 0) {
     res.statusCode = code;
     res.write(JSON.stringify(goods));
@@ -34,6 +44,22 @@ function getReqfilterGoods(req, res, params) {
       res.end();
     }
   }
+}
+
+function validate(params) {
+  return (
+    typeof params.item === 'string' ||
+    typeof params.type === 'string' ||
+    typeof params.weight === 'number' ||
+    typeof params.quantity === 'number' ||
+    (!!params.pricePerKilo &&
+      params.pricePerKilo[0] === '$' &&
+      !Number.isNaN(Number(params.pricePerKilo.slice(1)).toFixed(2))) ||
+    (!!params.pricePerItem &&
+      params.pricePerItem[0] === '$' &&
+      !Number.isNaN(Number(params.pricePerItem.slice(1)).toFixed(2))) ||
+    false
+  );
 }
 
 // function mostExpensive(req, res) {

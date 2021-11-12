@@ -7,6 +7,8 @@ const goods = require('../data.json');
 
 function filter() {
   return {
+    codeWrongValid: 400,
+    messageWrongValid: 'No Validate Message',
     codeNoContent: 400,
     messageNoContent: 'No content',
     code: 200,
