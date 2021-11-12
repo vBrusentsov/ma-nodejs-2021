@@ -11,13 +11,14 @@ const {
 function getReqfilterGoods(req, res, params) {
   const { goods, code, codeNoContent, messageNoContent } = services.filter();
 
-  if (Array.from(req.params).length === 0) {
+  if (Object.keys(params).length === 0) {
     res.statusCode = code;
     res.write(JSON.stringify(goods));
     res.end();
   } else {
     let resultGoods = goods;
-    req.params.forEach((value, key) => {
+    Object.keys(params).forEach((key) => {
+      const value = params[key];
       resultGoods = getFilterGoods(
         resultGoods,
         key,
