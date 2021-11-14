@@ -1,4 +1,6 @@
-function getPrice(goods) {
+const data = require('../../data.json');
+
+function getPrice(goods = data) {
   return goods.map((product) => {
     const price =
       +(product.pricePerKilo || product.pricePerItem)

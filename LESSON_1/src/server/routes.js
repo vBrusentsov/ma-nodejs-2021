@@ -23,5 +23,12 @@ module.exports = (req, res) => {
     return controllers.getResultMostExpensive(req, res);
   }
 
+  if (pathname === '/commonprice' && method === 'POST') {
+    return controllers.getResultPrice(req, res, req.body);
+  }
+
+  if (pathname === '/commonprice' && method === 'GET') {
+    return controllers.getResultPrice(req, res);
+  }
   return controllers.notFound(req, res);
 };

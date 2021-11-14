@@ -5,7 +5,7 @@ const data = require('../data.json');
 const {
   helper1: getFilterGoods,
   helper2: getMostExpensive,
-  // helper3: getPrice,
+  helper3: getPrice,
 } = require('../services/helpers');
 const requestHandler = require('./requestHandler');
 
@@ -59,6 +59,22 @@ function getResultMostExpensive(req, res) {
   }
   const resultMostExpensive = getMostExpensive(req.body);
   res.write(JSON.stringify(resultMostExpensive));
+  res.statusCode = code;
+  res.end();
+}
+
+function getResultPrice(req, res) {
+  const { code, codeWrongValid, messageWrongValid } = services.codes();
+  if (
+    req.body !== undefined &&
+    (!Array.isArray(req.body) || !validateBody(req.body))
+  ) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+    return;
+  }
+  const resultPrice = getPrice(req.body);
+  res.write(JSON.stringify(resultPrice));
   res.statusCode = code;
   res.end();
 }
@@ -121,7 +137,7 @@ function notFound(req, res) {
 module.exports = {
   getResultFilterGoods,
   getResultMostExpensive,
-  // price,
+  getResultPrice,
   // goods,
   notFound,
 };
