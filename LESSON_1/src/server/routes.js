@@ -4,7 +4,7 @@ module.exports = (req, res) => {
   const { pathname, method } = req;
 
   if (pathname === '/filter' && method === 'POST') {
-    return controllers.getReqfilterGoods(req, res, req.body);
+    return controllers.getResultFilterGoods(req, res, req.body);
   }
 
   if (pathname === '/filter' && method === 'GET') {
@@ -12,7 +12,7 @@ module.exports = (req, res) => {
     req.params.forEach((value, key) => {
       params[key] = value;
     });
-    return controllers.getReqfilterGoods(req, res, params);
+    return controllers.getResultFilterGoods(req, res, params);
   }
 
   if (pathname === '/topprice' && method === 'POST') {

@@ -18,7 +18,8 @@ module.exports = (req, res) => {
       body.push(chunk);
     })
     .on('end', () => {
-      body = JSON.parse(Buffer.concat(body).toString());
+      const stringBody = Buffer.concat(body).toString();
+      body = stringBody ? JSON.parse(stringBody) : undefined;
       res.setHeader('Content-Type', 'application/json');
       routes({ ...req, pathname, body, params: searchParams }, res);
     });

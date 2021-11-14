@@ -7,6 +7,7 @@ const {
   helper2: getMostExpensive,
   // helper3: getPrice,
 } = require('../services/helpers');
+const requestHandler = require('./requestHandler');
 
 function getResultFilterGoods(req, res, params) {
   const {
@@ -17,7 +18,7 @@ function getResultFilterGoods(req, res, params) {
     codeWrongValid,
     messageWrongValid,
   } = services.codes();
-  if (validate(params) === false) {
+  if (validateParams(params) === false) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
   }
@@ -47,14 +48,40 @@ function getResultFilterGoods(req, res, params) {
 }
 
 function getResultMostExpensive(req, res) {
-  const { code } = services.codes();
-  const resultMostExpensive = getMostExpensive();
+  const { code, codeWrongValid, messageWrongValid } = services.codes();
+  if (
+    req.body !== undefined &&
+    (!Array.isArray(req.body) || !validateBody(req.body))
+  ) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+    return;
+  }
+  const resultMostExpensive = getMostExpensive(req.body);
   res.write(JSON.stringify(resultMostExpensive));
   res.statusCode = code;
   res.end();
 }
 
-function validate(params) {
+function validateBody(array) {
+  return !array.some(
+    (products) =>
+      !(
+        (typeof products.item === 'string' &&
+          typeof products.type === 'string' &&
+          (typeof products.weight === 'number' ||
+            typeof products.quantity === 'number') &&
+          products.pricePerKilo &&
+          products.pricePerKilo[0] === '$' &&
+          !Number.isNaN(Number(products.pricePerKilo.slice(1)).toFixed(2))) ||
+        (products.pricePerItem &&
+          products.pricePerItem[0] === '$' &&
+          !Number.isNaN(Number(products.pricePerItem.slice(1)).toFixed(2)))
+      ),
+  );
+}
+
+function validateParams(params) {
   return (
     typeof params.item === 'string' ||
     typeof params.type === 'string' ||
