@@ -1,13 +1,12 @@
+const fs = require('fs');
+const path = require('path');
 const services = require('../services');
 
-const getBody = {};
-const data = require('../data.json');
 const {
   helper1: getFilterGoods,
   helper2: getMostExpensive,
   helper3: getPrice,
 } = require('../services/helpers');
-const requestHandler = require('./requestHandler');
 
 function getResultFilterGoods(req, res, params) {
   const {
@@ -79,6 +78,21 @@ function getResultPrice(req, res) {
   res.end();
 }
 
+function newData(req, res) {
+  const { codeWrongValid, messageWrongValid, code } = services.codes();
+  if (!Array.isArray(req.body) || !validateBody(req.body)) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+    return;
+  }
+  fs.writeFileSync(
+    path.resolve(process.cwd(), './LESSON_1/src/data.json'),
+    JSON.stringify(req.body, null, 2),
+  );
+  res.statusCode = code;
+  res.end();
+}
+
 function validateBody(array) {
   return !array.some(
     (products) =>
@@ -138,6 +152,6 @@ module.exports = {
   getResultFilterGoods,
   getResultMostExpensive,
   getResultPrice,
-  // goods,
+  newData,
   notFound,
 };

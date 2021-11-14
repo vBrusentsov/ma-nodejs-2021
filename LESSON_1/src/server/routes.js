@@ -30,5 +30,9 @@ module.exports = (req, res) => {
   if (pathname === '/commonprice' && method === 'GET') {
     return controllers.getResultPrice(req, res);
   }
+
+  if (pathname === '/data' && method === 'POST') {
+    return controllers.newData(req, res);
+  }
   return controllers.notFound(req, res);
 };
