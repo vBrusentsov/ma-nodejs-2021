@@ -15,5 +15,13 @@ module.exports = (req, res) => {
     return controllers.getReqfilterGoods(req, res, params);
   }
 
+  if (pathname === '/topprice' && method === 'POST') {
+    return controllers.getResultMostExpensive(req, res, req.body);
+  }
+
+  if (pathname === '/topprice' && method === 'GET') {
+    return controllers.getResultMostExpensive(req, res);
+  }
+
   return controllers.notFound(req, res);
 };

@@ -5,7 +5,7 @@ const goods = require('../data.json');
 //   helper3: getPrice,
 // } = require('./helpers');
 
-function filter() {
+function codes() {
   return {
     codeWrongValid: 400,
     messageWrongValid: 'No Validate Message',
@@ -24,6 +24,6 @@ function notFound() {
 }
 
 module.exports = {
-  filter,
+  codes,
   notFound,
 };
