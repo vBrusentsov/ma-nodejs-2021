@@ -127,20 +127,6 @@ function validateParams(params) {
   );
 }
 
-// function price(req, res) {
-//   const { message, code } = services.price();
-//   res.write(message);
-//   res.statusCode = code;
-//   res.end();
-// }
-
-// function goods(req, res) {
-//   const code = 200;
-//   res.write(data);
-//   res.statusCode = code;
-//   res.end();
-// }
-
 function notFound(req, res) {
   const { message, code } = services.notFound();
   res.statusCode = code;
