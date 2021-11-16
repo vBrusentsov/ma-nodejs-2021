@@ -16,7 +16,7 @@ module.exports = (req, res) => {
   }
 
   if (pathname === '/topprice' && method === 'POST') {
-    return controllers.getResultMostExpensive(req, res, req.body);
+    return controllers.getResultMostExpensive(req, res);
   }
 
   if (pathname === '/topprice' && method === 'GET') {

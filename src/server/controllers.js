@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { config } = require('../config');
 const services = require('../services');
 
 const {
@@ -17,7 +18,7 @@ function getResultFilterGoods(req, res, params) {
     codeWrongValid,
     messageWrongValid,
   } = services.codes();
-  if (validateParams(params) === false) {
+  if (!validateParams(params)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
   }
@@ -25,37 +26,37 @@ function getResultFilterGoods(req, res, params) {
     res.statusCode = code;
     res.write(JSON.stringify(goods));
     res.end();
-  } else {
-    let resultGoods = goods;
-    Object.keys(params).forEach((key) => {
-      const value = params[key];
-      resultGoods = getFilterGoods(
-        resultGoods,
-        key,
-        Number.isNaN(+value) ? value : +value,
-      );
-    });
-    if (resultGoods.length === 0) {
-      res.statusCode = codeNoContent;
-      res.end(JSON.stringify({ messageNoContent }));
-    } else {
-      res.write(JSON.stringify(resultGoods));
-      res.statusCode = code;
-      res.end();
-    }
+    return;
   }
+
+  let resultGoods = goods;
+  Object.keys(params).forEach((key) => {
+    const value = params[key];
+    resultGoods = getFilterGoods(
+      resultGoods,
+      key,
+      Number.isNaN(+value) ? value : +value,
+    );
+  });
+  if (resultGoods.length === 0) {
+    res.statusCode = codeNoContent;
+    res.end(JSON.stringify({ messageNoContent }));
+    return;
+  }
+
+  res.write(JSON.stringify(resultGoods));
+  res.statusCode = code;
+  res.end();
 }
 
 function getResultMostExpensive(req, res) {
   const { code, codeWrongValid, messageWrongValid } = services.codes();
-  if (
-    req.body !== undefined &&
-    (!Array.isArray(req.body) || !validateBody(req.body))
-  ) {
+  if (!req.body && (!Array.isArray(req.body) || !validateBody(req.body))) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
+
   const resultMostExpensive = getMostExpensive(req.body);
   res.write(JSON.stringify(resultMostExpensive));
   res.statusCode = code;
@@ -72,6 +73,7 @@ function getResultPrice(req, res) {
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
+
   const resultPrice = getPrice(req.body);
   res.write(JSON.stringify(resultPrice));
   res.statusCode = code;
@@ -85,8 +87,9 @@ function newData(req, res) {
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
+
   fs.writeFileSync(
-    path.resolve(process.cwd(), './LESSON_1/src/data.json'),
+    path.resolve(process.cwd(), config.DATA_PATH),
     JSON.stringify(req.body, null, 2),
   );
   res.statusCode = code;
@@ -117,7 +120,7 @@ function validateParams(params) {
     typeof params.type === 'string' ||
     typeof params.weight === 'number' ||
     typeof params.quantity === 'number' ||
-    (!!params.pricePerKilo &&
+    (params.pricePerKilo &&
       params.pricePerKilo[0] === '$' &&
       !Number.isNaN(Number(params.pricePerKilo.slice(1)).toFixed(2))) ||
     (!!params.pricePerItem &&

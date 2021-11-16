@@ -1,9 +1,7 @@
 const http = require('http');
-
+const { config } = require('./config');
 const requestHandler = require('./server/requestHandler');
 
-const PORT = 3000;
-
-http.createServer(requestHandler).listen(PORT, () => {
-  console.log(`Serever successfully started on port ${PORT}`);
+http.createServer(requestHandler).listen(config.PORT, () => {
+  console.log(`Server successfully started on port ${config.PORT}`);
 });
