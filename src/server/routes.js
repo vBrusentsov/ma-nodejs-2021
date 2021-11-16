@@ -24,7 +24,7 @@ module.exports = (req, res) => {
   }
 
   if (pathname === '/commonprice' && method === 'POST') {
-    return controllers.getResultPrice(req, res, req.body);
+    return controllers.getResultPrice(req, res);
   }
 
   if (pathname === '/commonprice' && method === 'GET') {

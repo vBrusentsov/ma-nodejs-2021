@@ -12,7 +12,7 @@ const {
 function getResultFilterGoods(req, res, params) {
   const {
     goods,
-    codeGood,
+    codeOK,
     codeNoContent,
     messageNoContent,
     codeWrongValid,
@@ -23,7 +23,7 @@ function getResultFilterGoods(req, res, params) {
     res.end(JSON.stringify({ messageWrongValid }));
   }
   if (Object.keys(params).length === 0) {
-    res.statusCode = codeGood;
+    res.statusCode = codeOK;
     res.write(JSON.stringify(goods));
     res.end();
     return;
@@ -45,12 +45,12 @@ function getResultFilterGoods(req, res, params) {
   }
 
   res.write(JSON.stringify(resultGoods));
-  res.statusCode = codeGood;
+  res.statusCode = codeOK;
   res.end();
 }
 
 function getResultMostExpensive(req, res) {
-  const { codeGood, codeWrongValid, messageWrongValid } = services.codes;
+  const { codeOK, codeWrongValid, messageWrongValid } = services.codes;
   if (!req.body && (!Array.isArray(req.body) || !validateBody(req.body))) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
@@ -59,12 +59,12 @@ function getResultMostExpensive(req, res) {
 
   const resultMostExpensive = getMostExpensive(req.body);
   res.write(JSON.stringify(resultMostExpensive));
-  res.statusCode = codeGood;
+  res.statusCode = codeOK;
   res.end();
 }
 
 function getResultPrice(req, res) {
-  const { codeGood, codeWrongValid, messageWrongValid } = services.codes;
+  const { codeOK, codeWrongValid, messageWrongValid } = services.codes;
   if (!req.body && (!Array.isArray(req.body) || !validateBody(req.body))) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
@@ -73,24 +73,29 @@ function getResultPrice(req, res) {
 
   const resultPrice = getPrice(req.body);
   res.write(JSON.stringify(resultPrice));
-  res.statusCode = codeGood;
+  res.statusCode = codeOK;
   res.end();
 }
 
 function newData(req, res) {
-  const { codeWrongValid, messageWrongValid, codeGood } = services.codes;
+  const { codeWrongValid, messageWrongValid, codeOK } = services.codes;
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
 
-  fs.writeFileSync(
-    path.resolve(process.cwd(), config.DATA_PATH),
-    JSON.stringify(req.body, null, 2),
-  );
-  res.statusCode = codeGood;
-  res.end();
+  try {
+    fs.writeFileSync(
+      path.resolve(process.cwd(), config.DATA_PAT),
+      JSON.stringify(req.body, null, 2),
+    );
+    res.statusCode = codeOK;
+    res.end();
+  } catch (err) {
+    console.error(err);
+    res.end(JSON.stringify({ err }));
+  }
 }
 
 function validateBody(array) {
