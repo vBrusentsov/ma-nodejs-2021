@@ -5,7 +5,7 @@ const codes = {
   messageWrongValid: 'No Validate Message',
   codeNoContent: 400,
   messageNoContent: 'No content',
-  code: 200,
+  codeGood: 200,
   goods,
 };
 

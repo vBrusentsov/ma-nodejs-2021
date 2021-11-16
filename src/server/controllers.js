@@ -12,18 +12,18 @@ const {
 function getResultFilterGoods(req, res, params) {
   const {
     goods,
-    code,
+    codeGood,
     codeNoContent,
     messageNoContent,
     codeWrongValid,
     messageWrongValid,
-  } = services.codes();
+  } = services.codes;
   if (!validateParams(params)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
   }
   if (Object.keys(params).length === 0) {
-    res.statusCode = code;
+    res.statusCode = codeGood;
     res.write(JSON.stringify(goods));
     res.end();
     return;
@@ -45,12 +45,12 @@ function getResultFilterGoods(req, res, params) {
   }
 
   res.write(JSON.stringify(resultGoods));
-  res.statusCode = code;
+  res.statusCode = codeGood;
   res.end();
 }
 
 function getResultMostExpensive(req, res) {
-  const { code, codeWrongValid, messageWrongValid } = services.codes();
+  const { codeGood, codeWrongValid, messageWrongValid } = services.codes;
   if (!req.body && (!Array.isArray(req.body) || !validateBody(req.body))) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
@@ -59,16 +59,13 @@ function getResultMostExpensive(req, res) {
 
   const resultMostExpensive = getMostExpensive(req.body);
   res.write(JSON.stringify(resultMostExpensive));
-  res.statusCode = code;
+  res.statusCode = codeGood;
   res.end();
 }
 
 function getResultPrice(req, res) {
-  const { code, codeWrongValid, messageWrongValid } = services.codes();
-  if (
-    req.body !== undefined &&
-    (!Array.isArray(req.body) || !validateBody(req.body))
-  ) {
+  const { codeGood, codeWrongValid, messageWrongValid } = services.codes;
+  if (!req.body && (!Array.isArray(req.body) || !validateBody(req.body))) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
     return;
@@ -76,12 +73,12 @@ function getResultPrice(req, res) {
 
   const resultPrice = getPrice(req.body);
   res.write(JSON.stringify(resultPrice));
-  res.statusCode = code;
+  res.statusCode = codeGood;
   res.end();
 }
 
 function newData(req, res) {
-  const { codeWrongValid, messageWrongValid, code } = services.codes();
+  const { codeWrongValid, messageWrongValid, codeGood } = services.codes;
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
@@ -92,7 +89,7 @@ function newData(req, res) {
     path.resolve(process.cwd(), config.DATA_PATH),
     JSON.stringify(req.body, null, 2),
   );
-  res.statusCode = code;
+  res.statusCode = codeGood;
   res.end();
 }
 
@@ -131,7 +128,7 @@ function validateParams(params) {
 }
 
 function notFound(req, res) {
-  const { message, code } = services.notFound();
+  const { message, code } = services.notFound;
   res.statusCode = code;
   res.write(JSON.stringify({ message }));
   res.end();
