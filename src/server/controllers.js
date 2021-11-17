@@ -87,7 +87,7 @@ function newData(req, res) {
 
   try {
     fs.writeFileSync(
-      path.resolve(process.cwd(), config.DATA_PAT),
+      path.resolve(process.cwd(), config.DATA_PATH),
       JSON.stringify(req.body, null, 2),
     );
     res.statusCode = codeOK;
@@ -100,34 +100,40 @@ function newData(req, res) {
 
 function validateBody(array) {
   return !array.some(
-    (products) =>
+    ({ item, type, weight, quantity, pricePerKilo, pricePerItem }) =>
       !(
-        (typeof products.item === 'string' &&
-          typeof products.type === 'string' &&
-          (typeof products.weight === 'number' ||
-            typeof products.quantity === 'number') &&
-          products.pricePerKilo &&
-          products.pricePerKilo[0] === '$' &&
-          !Number.isNaN(Number(products.pricePerKilo.slice(1)).toFixed(2))) ||
-        (products.pricePerItem &&
-          products.pricePerItem[0] === '$' &&
-          !Number.isNaN(Number(products.pricePerItem.slice(1)).toFixed(2)))
+        (typeof item === 'string' &&
+          typeof type === 'string' &&
+          (typeof weight === 'number' || typeof quantity === 'number') &&
+          pricePerKilo &&
+          pricePerKilo[0] === '$' &&
+          !Number.isNaN(Number(pricePerKilo.slice(1)).toFixed(2))) ||
+        (pricePerItem &&
+          pricePerItem[0] === '$' &&
+          !Number.isNaN(Number(pricePerItem.slice(1)).toFixed(2)))
       ),
   );
 }
 
-function validateParams(params) {
+function validateParams({
+  item,
+  type,
+  weight,
+  quantity,
+  pricePerKilo,
+  pricePerItem,
+}) {
   return (
-    typeof params.item === 'string' ||
-    typeof params.type === 'string' ||
-    typeof params.weight === 'number' ||
-    typeof params.quantity === 'number' ||
-    (params.pricePerKilo &&
-      params.pricePerKilo[0] === '$' &&
-      !Number.isNaN(Number(params.pricePerKilo.slice(1)).toFixed(2))) ||
-    (!!params.pricePerItem &&
-      params.pricePerItem[0] === '$' &&
-      !Number.isNaN(Number(params.pricePerItem.slice(1)).toFixed(2))) ||
+    typeof item === 'string' ||
+    typeof type === 'string' ||
+    typeof weight === 'number' ||
+    typeof quantity === 'number' ||
+    (pricePerKilo &&
+      pricePerKilo[0] === '$' &&
+      !Number.isNaN(Number(pricePerKilo.slice(1)).toFixed(2))) ||
+    (!!pricePerItem &&
+      pricePerItem[0] === '$' &&
+      !Number.isNaN(Number(pricePerItem.slice(1)).toFixed(2))) ||
     false
   );
 }
