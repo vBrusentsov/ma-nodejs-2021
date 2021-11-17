@@ -101,17 +101,15 @@ function newData(req, res) {
 function validateBody(array) {
   return !array.some(
     ({ item, type, weight, quantity, pricePerKilo, pricePerItem }) =>
-      !(
-        (typeof item === 'string' &&
-          typeof type === 'string' &&
-          (typeof weight === 'number' || typeof quantity === 'number') &&
-          pricePerKilo &&
-          pricePerKilo[0] === '$' &&
-          !Number.isNaN(Number(pricePerKilo.slice(1)).toFixed(2))) ||
-        (pricePerItem &&
-          pricePerItem[0] === '$' &&
-          !Number.isNaN(Number(pricePerItem.slice(1)).toFixed(2)))
-      ),
+      (typeof item !== 'string' ||
+        typeof type !== 'string' ||
+        (typeof weight !== 'number' && typeof quantity !== 'number') ||
+        !pricePerKilo ||
+        pricePerKilo[0] !== '$' ||
+        Number.isNaN(Number(pricePerKilo.slice(1)).toFixed(2))) &&
+      (!pricePerItem ||
+        pricePerItem[0] !== '$' ||
+        Number.isNaN(Number(pricePerItem.slice(1)).toFixed(2))),
   );
 }
 
