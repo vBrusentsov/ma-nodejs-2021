@@ -92,7 +92,7 @@ function newData(req, res) {
 
   try {
     fs.writeFileSync(
-      path.resolve(process.cwd(), config.DATA_PAT),
+      path.resolve(process.cwd(), config.DATA_PATH),
       JSON.stringify(req.body, null, 2),
     );
     res.statusCode = codeOK;
