@@ -1,4 +1,4 @@
-const data = require('../data.json');
+const data = require('../../data.json');
 
 function getMostExpensive(array = data) {
   let leastPrice = null;

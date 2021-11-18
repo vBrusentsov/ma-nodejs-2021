@@ -1,9 +1,9 @@
-const data = require('./data.json');
+const data = require('./src/data.json');
 const {
   helper1: getFilterGoods,
   helper2: getMostExpensive,
   helper3: getPrice,
-} = require('./helpers');
+} = require('./src/services/helpers');
 
 function boot(products) {
   console.log(getPrice(products));
