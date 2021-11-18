@@ -1,12 +1,11 @@
-const goods = require('../data.json');
-
 const codes = {
   codeWrongValid: 400,
   messageWrongValid: 'No Validate Message',
   codeNoContent: 400,
   messageNoContent: 'No content',
   codeOK: 200,
-  goods,
+  messageServerError: 'Internal Server Error',
+  codeServerError: 500,
 };
 
 const notFound = {
