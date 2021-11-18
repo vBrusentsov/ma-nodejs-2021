@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { config } = require('../config');
 const services = require('../services');
-
+const goods = require('../data.json');
 const {
   helper1: getFilterGoods,
   helper2: getMostExpensive,
@@ -11,7 +11,6 @@ const {
 
 function getResultFilterGoods(req, res, params) {
   const {
-    goods,
     codeOK,
     codeNoContent,
     messageNoContent,
@@ -78,7 +77,13 @@ function getResultPrice(req, res) {
 }
 
 function newData(req, res) {
-  const { codeWrongValid, messageWrongValid, codeOK } = services.codes;
+  const {
+    codeWrongValid,
+    messageWrongValid,
+    codeOK,
+    messageServerError,
+    codeServerError,
+  } = services.codes;
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
@@ -87,14 +92,15 @@ function newData(req, res) {
 
   try {
     fs.writeFileSync(
-      path.resolve(process.cwd(), config.DATA_PATH),
+      path.resolve(process.cwd(), config.DATA_PAT),
       JSON.stringify(req.body, null, 2),
     );
     res.statusCode = codeOK;
     res.end();
   } catch (err) {
+    res.statusCode = codeServerError;
     console.error(err);
-    res.end(JSON.stringify({ err }));
+    res.end(JSON.stringify({ messageServerError }));
   }
 }
 
