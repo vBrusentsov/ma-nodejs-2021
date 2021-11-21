@@ -8,6 +8,7 @@ const {
   helper2: getMostExpensive,
   helper3: getPrice,
 } = require('../services/helpers');
+const discountPriceCallback = require('./discountPrice');
 
 function getResultFilterGoods(req, res, params) {
   const {
@@ -112,7 +113,7 @@ function getPromiseDiscount(req, res) {
     return;
   }
   res.statusCode = codeOK;
-  res.write(JSON.stringify(req.body));
+  res.write(JSON.stringify(getPrice(req.body)));
   res.end();
 }
 
