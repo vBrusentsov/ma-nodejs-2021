@@ -104,6 +104,18 @@ function newData(req, res) {
   }
 }
 
+function getPromiseDiscount(req, res) {
+  const { codeOK, codeWrongValid, messageWrongValid } = services.codes;
+  if (!Array.isArray(req.body) || !validateBody(req.body)) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+    return;
+  }
+  res.statusCode = codeOK;
+  res.write(JSON.stringify(req.body));
+  res.end();
+}
+
 function validateBody(array) {
   return !array.some(
     ({ item, type, weight, quantity, pricePerKilo, pricePerItem }) =>
@@ -141,7 +153,9 @@ function validateParams({
     false
   );
 }
-
+const promisePriceWithDiscount = new Promise((resolve, reject) => {
+  setTimeout(() => {});
+});
 function notFound(req, res) {
   const { message, code } = services.notFound;
   res.statusCode = code;
@@ -154,5 +168,6 @@ module.exports = {
   getResultMostExpensive,
   getResultPrice,
   newData,
+  getPromiseDiscount,
   notFound,
 };
