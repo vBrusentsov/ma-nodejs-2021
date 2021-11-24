@@ -112,8 +112,8 @@ function getPromiseDiscount(req, res) {
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
-
-  const promisesDiscount = goods.map(
+  const goodsWithPrice = getPrice(goods);
+  const promisesDiscount = goodsWithPrice.map(
     (product) => () =>
       new Promise((resolve, reject) => {
         discountPriceCallback((err, value) => {
