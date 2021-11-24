@@ -112,11 +112,50 @@ function getPromiseDiscount(req, res) {
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
-  res.statusCode = codeOK;
-  res.write(JSON.stringify(getPrice(req.body)));
-  res.end();
-}
 
+  const promisesDiscount = goods.map(
+    (product) => () =>
+      new Promise((resolve, reject) => {
+        discountPriceCallback((err, value) => {
+          if (err) {
+            return reject(err);
+          }
+          const discountProduct = {
+            ...product,
+            priceWithDiscount: value,
+          };
+
+          return resolve(discountProduct);
+        });
+      }),
+  );
+  const promisesDiscountRetry = promisesDiscount.map((promise) =>
+    retryPromises(promise),
+  );
+  Promise.all(promisesDiscountRetry)
+    .then((discountProduct) => {
+      res.statusCode = codeOK;
+      res.write(JSON.stringify(discountProduct));
+      res.end();
+    })
+    .catch((err) => {
+      res.statusCode = codeOK;
+      res.write(JSON.stringify(promisesDiscount.then(), err));
+      res.end();
+    });
+  // console.log(promiseDiscount);
+}
+function retryPromises(fn, ms = 0) {
+  return new Promise((resolve) =>
+    fn()
+      .then(resolve)
+      .catch(() => {
+        setTimeout(() => {
+          retryPromises(fn, ms).then(resolve);
+        }, ms);
+      }),
+  );
+}
 function validateBody(array) {
   return !array.some(
     ({ item, type, weight, quantity, pricePerKilo, pricePerItem }) =>
@@ -154,9 +193,7 @@ function validateParams({
     false
   );
 }
-const promisePriceWithDiscount = new Promise((resolve, reject) => {
-  setTimeout(() => {});
-});
+const promisePriceWithDiscount = new Promise((resolve, reject) => {});
 function notFound(req, res) {
   const { message, code } = services.notFound;
   res.statusCode = code;
