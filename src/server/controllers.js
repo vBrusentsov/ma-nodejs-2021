@@ -112,7 +112,7 @@ function getPromiseDiscount(req, res) {
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
-  const goodsWithPrice = getPrice(goods);
+  const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
   const promisesDiscount = goodsWithPrice.map(
     (product) => () =>
       new Promise((resolve, reject) => {
@@ -120,9 +120,10 @@ function getPromiseDiscount(req, res) {
           if (err) {
             return reject(err);
           }
+          const discount = product.price * ((100 - value) / 100);
           const discountProduct = {
             ...product,
-            priceWithDiscount: value,
+            priceWithDiscount: discount,
           };
 
           return resolve(discountProduct);
@@ -193,7 +194,7 @@ function validateParams({
     false
   );
 }
-const promisePriceWithDiscount = new Promise((resolve, reject) => {});
+
 function notFound(req, res) {
   const { message, code } = services.notFound;
   res.statusCode = code;
