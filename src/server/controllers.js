@@ -142,7 +142,7 @@ function getPromiseDiscount(req, res) {
     })
     .catch((err) => {
       res.statusCode = codeOK;
-      res.write(JSON.stringify(promisesDiscount.then(), err));
+      res.write(JSON.stringify(promisesDiscount, err));
       res.end();
     });
 }
@@ -223,7 +223,7 @@ async function getAsyncDiscountPrice(req, res) {
     res.end(JSON.stringify(discountProduct));
   } catch (err) {
     res.statusCode = codeOK;
-    res.end(JSON.stringify(asyncDiscount.then(), err));
+    res.end(JSON.stringify(asyncDiscount, err));
   }
 }
 
