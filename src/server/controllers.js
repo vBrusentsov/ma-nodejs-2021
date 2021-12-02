@@ -9,7 +9,7 @@ const {
   helper2: getMostExpensive,
   helper3: getPrice,
 } = require('../services/helpers');
-const discountPriceCallback = require('./discountPrice');
+const discountPriceCallback = require('../services/discountPrice');
 
 function getResultFilterGoods(req, res, params) {
   const {
@@ -107,33 +107,13 @@ function newData(req, res) {
 }
 
 function getPromiseDiscount(req, res) {
-  const { codeOK, codeWrongValid, messageWrongValid } = services.codes;
+  const { codeOK, codeWrongValid, messageWrongValid, codeServerError } =
+    services.codes;
+  const { promisesDiscountRetry } = services.getPromiseDiscount(req);
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
-    return;
   }
-  const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
-  const promisesDiscount = goodsWithPrice.map(
-    (product) => () =>
-      new Promise((resolve, reject) => {
-        discountPriceCallback((err, value) => {
-          if (err) {
-            return reject(err);
-          }
-          const discount = product.price * ((100 - value) / 100);
-          const discountProducts = {
-            ...product,
-            priceWithDiscount: discount,
-          };
-
-          return resolve(discountProducts);
-        });
-      }),
-  );
-  const promisesDiscountRetry = promisesDiscount.map((promise) =>
-    retryPromises(promise),
-  );
   Promise.all(promisesDiscountRetry)
     .then((discountProducts) => {
       res.statusCode = codeOK;
@@ -141,45 +121,21 @@ function getPromiseDiscount(req, res) {
       res.end();
     })
     .catch((err) => {
-      res.statusCode = codeOK;
-      res.write(JSON.stringify(promisesDiscount, err));
+      res.statusCode = codeServerError;
+      res.write(JSON.stringify(err));
       res.end();
     });
 }
-function retryPromises(fn, ms = 0) {
-  return new Promise((resolve) =>
-    fn()
-      .then(resolve)
-      .catch(() => {
-        setTimeout(() => {
-          retryPromises(fn, ms).then(resolve);
-        }, ms);
-      }),
-  );
-}
+
 function getPromisifyDiscountPrice(req, res) {
-  const { codeOK, messageWrongValid, codeWrongValid } = services.codes;
+  const { codeOK, messageWrongValid, codeWrongValid, codeServerError } =
+    services.codes;
+  const { promisifyDiscountRetry } = services.getPromisifyDiscountPrice(req);
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
-
-  const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
-  const promisifyDiscount = goodsWithPrice.map((product) => () => {
-    const promisifyCallback = util.promisify(discountPriceCallback);
-    return promisifyCallback.then((value) => {
-      const discount = product.price * ((100 - value) / 100);
-      const discountProducts = {
-        ...product,
-        priceWithDiscount: discount,
-      };
-      return discountProducts;
-    });
-  });
-  const promisifyDiscountRetry = promisifyDiscount.map((promise) =>
-    retryPromises(promise),
-  );
 
   Promise.all(promisifyDiscountRetry)
     .then((discountProducts) => {
@@ -188,42 +144,29 @@ function getPromisifyDiscountPrice(req, res) {
       res.end();
     })
     .catch((err) => {
-      res.statusCode = codeOK;
-      res.write(JSON.stringify(goodsWithPrice, err));
+      res.statusCode = codeServerError;
+      res.write(JSON.stringify(err));
       res.end();
+      console.log(err);
     });
 }
+
 async function getAsyncDiscountPrice(req, res) {
-  const { codeOK, messageWrongValid, codeWrongValid } = services.codes;
+  const { codeOK, messageWrongValid, codeWrongValid, messageServerError } =
+    services.codes;
+  const { promisifyDiscountRetry } = services.getAsyncDiscountPrice(req);
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
     res.statusCode = codeWrongValid;
     res.end(JSON.stringify({ messageWrongValid }));
     return;
   }
-
-  const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
-  const asyncDiscount = goodsWithPrice.map((product) => () => {
-    const promisifyCallback = util.promisify(discountPriceCallback);
-    return promisifyCallback().then((value) => {
-      const discount = product.price * ((100 - value) / 100);
-      const discountProducts = {
-        ...product,
-        priceWithDiscount: discount,
-      };
-
-      return discountProducts;
-    });
-  });
-  const promisifyDiscountRetry = asyncDiscount.map((promise) =>
-    retryPromises(promise),
-  );
   try {
     const discountProduct = await Promise.all(promisifyDiscountRetry);
     res.statusCode = codeOK;
     res.end(JSON.stringify(discountProduct));
   } catch (err) {
-    res.statusCode = codeOK;
-    res.end(JSON.stringify(asyncDiscount, err));
+    res.statusCode = messageServerError;
+    res.end(JSON.stringify(err));
   }
 }
 
