@@ -9,7 +9,6 @@ const {
   helper2: getMostExpensive,
   helper3: getPrice,
 } = require('../services/helpers');
-const discountPriceCallback = require('../services/discountPrice');
 
 function getResultFilterGoods(req, res, params) {
   const {
@@ -152,7 +151,7 @@ function getPromisifyDiscountPrice(req, res) {
 }
 
 async function getAsyncDiscountPrice(req, res) {
-  const { codeOK, messageWrongValid, codeWrongValid, messageServerError } =
+  const { codeOK, messageWrongValid, codeWrongValid, codeServerError } =
     services.codes;
   const { promisifyDiscountRetry } = services.getAsyncDiscountPrice(req);
   if (!Array.isArray(req.body) || !validateBody(req.body)) {
@@ -165,7 +164,7 @@ async function getAsyncDiscountPrice(req, res) {
     res.statusCode = codeOK;
     res.end(JSON.stringify(discountProduct));
   } catch (err) {
-    res.statusCode = messageServerError;
+    res.statusCode = codeServerError;
     res.end(JSON.stringify(err));
   }
 }

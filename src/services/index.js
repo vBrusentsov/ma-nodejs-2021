@@ -64,7 +64,7 @@ function getPromisifyDiscountPrice(req) {
   return { promisifyDiscountRetry };
 }
 
-async function getAsyncDiscountPrice(req) {
+function getAsyncDiscountPrice(req) {
   const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
   const asyncDiscount = goodsWithPrice.map((product) => () => {
     const promisifyCallback = util.promisify(discountPriceCallback);
