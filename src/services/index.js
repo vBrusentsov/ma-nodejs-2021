@@ -1,9 +1,5 @@
 const util = require('util');
-const {
-  helper1: getFilterGoods,
-  helper2: getMostExpensive,
-  helper3: getPrice,
-} = require('./helpers');
+const { helper3: getPrice } = require('./helpers');
 const discountPriceCallback = require('./discountPrice');
 const goods = require('../data.json');
 
@@ -25,7 +21,14 @@ function getPromiseDiscount(req) {
           if (err) {
             return reject(err);
           }
-          const discount = product.price * ((100 - value) / 100);
+
+          let discount = product.price * ((100 - value) / 100);
+          if (product.type === 'Red Spanish') {
+            discount = product.price * ((100 - value * 2) / 100);
+          }
+          if (product.type === 'Tangerine') {
+            discount = product.price * ((100 - value * 3) / 100);
+          }
           const discountProducts = {
             ...product,
             priceWithDiscount: discount,
@@ -47,7 +50,13 @@ function getPromisifyDiscountPrice(req) {
     const promisifyCallback = util.promisify(discountPriceCallback);
     return promisifyCallback()
       .then((value) => {
-        const discount = product.price * ((100 - value) / 100);
+        let discount = product.price * ((100 - value) / 100);
+        if (product.type === 'Red Spanish') {
+          discount = product.price * ((100 - value * 2) / 100);
+        }
+        if (product.type === 'Tangerine') {
+          discount = product.price * ((100 - value * 3) / 100);
+        }
         const discountProducts = {
           ...product,
           priceWithDiscount: discount,
@@ -69,7 +78,15 @@ function getAsyncDiscountPrice(req) {
   const asyncDiscount = goodsWithPrice.map((product) => () => {
     const promisifyCallback = util.promisify(discountPriceCallback);
     return promisifyCallback().then((value) => {
-      const discount = product.price * ((100 - value) / 100);
+      let discount = product.price * ((100 - value) / 100);
+
+      if (product.type === 'Red Spanish') {
+        discount = product.price * ((100 - value * 2) / 100);
+      }
+      if (product.type === 'Tangerine') {
+        discount = product.price * ((100 - value * 3) / 100);
+      }
+
       const discountProducts = {
         ...product,
         priceWithDiscount: discount,
