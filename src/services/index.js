@@ -48,8 +48,8 @@ function getPromiseDiscount(req) {
 function getPromisifyDiscountPrice(req) {
   const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
   const promisifyDiscount = goodsWithPrice.map((product) => () => {
-    const promisifyCallback = util.promisify(discountPriceCallback);
-    return promisifyCallback()
+    const promisifyFunction = util.promisify(discountPriceCallback);
+    return promisifyFunction()
       .then((discount) => {
         let discountPrice = product.price * ((100 - discount) / 100);
         if (product.type === 'Red Spanish') {
@@ -78,8 +78,8 @@ function getPromisifyDiscountPrice(req) {
 function getAsyncDiscountPrice(req) {
   const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
   const asyncDiscount = goodsWithPrice.map((product) => () => {
-    const promisifyCallback = util.promisify(discountPriceCallback);
-    return promisifyCallback().then((discount) => {
+    const promisifyFunction = util.promisify(discountPriceCallback);
+    return promisifyFunction().then((discount) => {
       let discountPrice = product.price * ((100 - discount) / 100);
       if (product.type === 'Red Spanish') {
         discountPrice *= (100 - discount) / 100;
