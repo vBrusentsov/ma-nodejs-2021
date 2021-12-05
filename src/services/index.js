@@ -17,21 +17,22 @@ function getPromiseDiscount(req) {
   const promisesDiscount = goodsWithPrice.map(
     (product) => () =>
       new Promise((resolve, reject) => {
-        discountPriceCallback((err, value) => {
+        discountPriceCallback((err, discount) => {
           if (err) {
             return reject(err);
           }
 
-          let discount = product.price * ((100 - value) / 100);
+          let discountPrice = product.price * ((100 - discount) / 100);
           if (product.type === 'Red Spanish') {
-            discount = product.price * ((100 - value * 2) / 100);
+            discountPrice *= (100 - discount) / 100;
           }
           if (product.type === 'Tangerine') {
-            discount = product.price * ((100 - value * 3) / 100);
+            discountPrice *= (100 - discount) / 100;
+            discountPrice *= (100 - discount) / 100;
           }
           const discountProducts = {
             ...product,
-            priceWithDiscount: discount,
+            priceWithDiscount: discountPrice,
           };
 
           return resolve(discountProducts);
@@ -49,17 +50,18 @@ function getPromisifyDiscountPrice(req) {
   const promisifyDiscount = goodsWithPrice.map((product) => () => {
     const promisifyCallback = util.promisify(discountPriceCallback);
     return promisifyCallback()
-      .then((value) => {
-        let discount = product.price * ((100 - value) / 100);
+      .then((discount) => {
+        let discountPrice = product.price * ((100 - discount) / 100);
         if (product.type === 'Red Spanish') {
-          discount = product.price * ((100 - value * 2) / 100);
+          discountPrice *= (100 - discount) / 100;
         }
         if (product.type === 'Tangerine') {
-          discount = product.price * ((100 - value * 3) / 100);
+          discountPrice *= (100 - discount) / 100;
+          discountPrice *= (100 - discount) / 100;
         }
         const discountProducts = {
           ...product,
-          priceWithDiscount: discount,
+          priceWithDiscount: discountPrice,
         };
         return discountProducts;
       })
@@ -77,19 +79,19 @@ function getAsyncDiscountPrice(req) {
   const goodsWithPrice = getPrice(req.method === 'GET' ? goods : req.body);
   const asyncDiscount = goodsWithPrice.map((product) => () => {
     const promisifyCallback = util.promisify(discountPriceCallback);
-    return promisifyCallback().then((value) => {
-      let discount = product.price * ((100 - value) / 100);
-
+    return promisifyCallback().then((discount) => {
+      let discountPrice = product.price * ((100 - discount) / 100);
       if (product.type === 'Red Spanish') {
-        discount = product.price * ((100 - value * 2) / 100);
+        discountPrice *= (100 - discount) / 100;
       }
       if (product.type === 'Tangerine') {
-        discount = product.price * ((100 - value * 3) / 100);
+        discountPrice *= (100 - discount) / 100;
+        discountPrice *= (100 - discount) / 100;
       }
 
       const discountProducts = {
         ...product,
-        priceWithDiscount: discount,
+        priceWithDiscount: discountPrice,
       };
 
       return discountProducts;
