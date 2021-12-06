@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 const { config } = require('../config');
 const services = require('../services');
 const goods = require('../data.json');
@@ -104,6 +105,70 @@ function newData(req, res) {
   }
 }
 
+function getPromiseDiscount(req, res) {
+  const { codeOK, codeWrongValid, messageWrongValid, codeServerError } =
+    services.codes;
+  const { promisesDiscountRetry } = services.getPromiseDiscount(req);
+  if (!Array.isArray(req.body) || !validateBody(req.body)) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+  }
+  Promise.all(promisesDiscountRetry)
+    .then((discountProducts) => {
+      res.statusCode = codeOK;
+      res.write(JSON.stringify(discountProducts));
+      res.end();
+    })
+    .catch((err) => {
+      res.statusCode = codeServerError;
+      res.write(JSON.stringify(err));
+      res.end();
+    });
+}
+
+function getPromisifyDiscountPrice(req, res) {
+  const { codeOK, messageWrongValid, codeWrongValid, codeServerError } =
+    services.codes;
+  const { promisifyDiscountRetry } = services.getPromisifyDiscountPrice(req);
+  if (!Array.isArray(req.body) || !validateBody(req.body)) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+    return;
+  }
+
+  Promise.all(promisifyDiscountRetry)
+    .then((discountProducts) => {
+      res.statusCode = codeOK;
+      res.write(JSON.stringify(discountProducts));
+      res.end();
+    })
+    .catch((err) => {
+      res.statusCode = codeServerError;
+      res.write(JSON.stringify(err));
+      res.end();
+      console.log(err);
+    });
+}
+
+async function getAsyncDiscountPrice(req, res) {
+  const { codeOK, messageWrongValid, codeWrongValid, codeServerError } =
+    services.codes;
+  const { promisifyDiscountRetry } = services.getAsyncDiscountPrice(req);
+  if (!Array.isArray(req.body) || !validateBody(req.body)) {
+    res.statusCode = codeWrongValid;
+    res.end(JSON.stringify({ messageWrongValid }));
+    return;
+  }
+  try {
+    const discountProduct = await Promise.all(promisifyDiscountRetry);
+    res.statusCode = codeOK;
+    res.end(JSON.stringify(discountProduct));
+  } catch (err) {
+    res.statusCode = codeServerError;
+    res.end(JSON.stringify(err));
+  }
+}
+
 function validateBody(array) {
   return !array.some(
     ({ item, type, weight, quantity, pricePerKilo, pricePerItem }) =>
@@ -154,5 +219,8 @@ module.exports = {
   getResultMostExpensive,
   getResultPrice,
   newData,
+  getPromiseDiscount,
+  getPromisifyDiscountPrice,
+  getAsyncDiscountPrice,
   notFound,
 };
